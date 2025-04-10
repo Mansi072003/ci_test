@@ -1,0 +1,41 @@
+# Node.js CI Pipeline for Azure DevOps
+# Builds the app, creates and publishes artifacts
+
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  # Install Node.js
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '20.x'
+    displayName: 'Install Node.js'
+
+  # Install dependencies and build the app
+  - script: |
+      npm install
+      npm run build
+    displayName: 'Install Dependencies and Build'
+
+  # Optional: Run tests
+  - script: |
+      echo "Running tests..."
+      # npm test
+    displayName: 'Run Tests (Optional)'
+
+  # Create build artifacts (e.g., logs, static files, etc.)
+  - script: |
+      echo "Generating build artifacts..."
+      mkdir -p artifacts
+      echo "This is a sample artifact." > artifacts/sample.txt
+    displayName: 'Create Artifacts'
+
+  # Publish the artifacts to Azure DevOps
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: 'artifacts'
+      ArtifactName: 'MyArtifact'
+      publishLocation: 'Container'  
